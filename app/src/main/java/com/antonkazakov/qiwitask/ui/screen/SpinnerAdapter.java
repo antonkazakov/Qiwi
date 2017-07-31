@@ -63,10 +63,10 @@ public class SpinnerAdapter extends ArrayAdapter<Widget.Choice> {
         return convertView;
     }
 
-    private View getUsualView1(int position,
-                               @Nullable View convertView,
-                               @NonNull ViewGroup parent,
-                               @NonNull @LayoutRes int layout) {
+    private View getUsualViewWithClickListener(int position,
+                                               @Nullable View convertView,
+                                               @NonNull ViewGroup parent,
+                                               @NonNull @LayoutRes int layout) {
         convertView = layoutInflater.inflate(layout, parent, false);
         TextView textView = (TextView) convertView.findViewById(R.id.spinner_item_text);
         textView.setText(choices.get(position).getTitle());
@@ -89,7 +89,7 @@ public class SpinnerAdapter extends ArrayAdapter<Widget.Choice> {
     public View getDropDownView(int position, View convertView,
                                 @NonNull ViewGroup parent) {
 
-        return getUsualView1(position, convertView, parent, R.layout.spinner_child_item);
+        return getUsualViewWithClickListener(position, convertView, parent, R.layout.spinner_child_item);
     }
 
     public interface OnPleaseClickListener {
