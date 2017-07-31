@@ -26,7 +26,7 @@ public class SpinnerAdapter extends ArrayAdapter<Widget.Choice> {
     private Context context;
     private List<Widget.Choice> choices = new ArrayList<>();
     private LayoutInflater layoutInflater;
-    private OnPleaseClickListener pleaseClickListener;
+    private OnDropDownItemClickListener onDropDownItemClickListener;
 
     public SpinnerAdapter(@NonNull Context context,
                           @LayoutRes int resource,
@@ -37,8 +37,8 @@ public class SpinnerAdapter extends ArrayAdapter<Widget.Choice> {
         layoutInflater = LayoutInflater.from(context);
     }
 
-    public void setPleaseClickListener(OnPleaseClickListener pleaseClickListener) {
-        this.pleaseClickListener = pleaseClickListener;
+    public void setOnDropDownItemClickListener(OnDropDownItemClickListener onDropDownItemClickListener) {
+        this.onDropDownItemClickListener = onDropDownItemClickListener;
     }
 
     @Nullable
@@ -73,7 +73,7 @@ public class SpinnerAdapter extends ArrayAdapter<Widget.Choice> {
         textView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                pleaseClickListener.onClick(position);
+                onDropDownItemClickListener.onClick(position);
             }
         });
         return convertView;
@@ -92,11 +92,10 @@ public class SpinnerAdapter extends ArrayAdapter<Widget.Choice> {
         return getUsualViewWithClickListener(position, convertView, parent, R.layout.spinner_child_item);
     }
 
-    public interface OnPleaseClickListener {
+    public interface OnDropDownItemClickListener {
 
         void onClick(int pos);
 
     }
-
 
 }

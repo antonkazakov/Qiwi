@@ -140,7 +140,7 @@ public class WidgetGeneratorAdapter extends RecyclerView.Adapter<RecyclerView.Vi
         writableItemViewHolder.editText.setText(element.getView().getText());
         writableItemViewHolder.textInputLayout.setError(null);
 
-        Subscription rxTextViewObservable = RxTextView.textChanges(writableItemViewHolder.editText)
+        Subscription textWatcherSubscription = RxTextView.textChanges(writableItemViewHolder.editText)
                 .filter(charSequence -> charSequence.length() >= 2)
                 .debounce(500, TimeUnit.MILLISECONDS)
                 .map(CharSequence::toString)
@@ -154,7 +154,7 @@ public class WidgetGeneratorAdapter extends RecyclerView.Adapter<RecyclerView.Vi
                     }
                 });
 
-        compositeSubscription.add(rxTextViewObservable);
+        compositeSubscription.add(textWatcherSubscription);
     }
 
     /**
@@ -177,10 +177,10 @@ public class WidgetGeneratorAdapter extends RecyclerView.Adapter<RecyclerView.Vi
          * or will trigger twice depending on other actions.
          * The best solution I got -> create custom listener which will only trigger when dropdownitem was clicked
          */
-        Subscription subscription1 = Observable.unsafeCreate((Observable.OnSubscribe<Integer>) subscriber -> {
-            SpinnerAdapter.OnPleaseClickListener onPleaseClickListener =
+        Subscription spinnerAdapterClickSubscription = Observable.unsafeCreate((Observable.OnSubscribe<Integer>) subscriber -> {
+            SpinnerAdapter.OnDropDownItemClickListener onDropDownItemClickListener =
                     subscriber::onNext;
-            spinnerAdapter.setPleaseClickListener(onPleaseClickListener);
+            spinnerAdapter.setOnDropDownItemClickListener(onDropDownItemClickListener);
         })
                 .subscribeOn(AndroidSchedulers.mainThread())
                 .subscribe(integer -> {
@@ -193,7 +193,7 @@ public class WidgetGeneratorAdapter extends RecyclerView.Adapter<RecyclerView.Vi
         /**
          * To default select first item in spinner
          */
-        Subscription subscription2 = RxAdapterView.itemSelections(spinnerItemViewHolder.spinner)
+        Subscription spinnerItemSelectedListener = RxAdapterView.itemSelections(spinnerItemViewHolder.spinner)
                 .subscribeOn(AndroidSchedulers.mainThread())
                 .subscribe(integer -> {
                     if (!elementNamesKeySet.contains(element.getName())) {
@@ -204,7 +204,7 @@ public class WidgetGeneratorAdapter extends RecyclerView.Adapter<RecyclerView.Vi
                     }
                 }, throwable -> Log.e(TAG, "call: ", throwable));
 
-        compositeSubscription.addAll(subscription1, subscription2);
+        compositeSubscription.addAll(spinnerAdapterClickSubscription, spinnerItemSelectedListener);
     }
 
     /**
