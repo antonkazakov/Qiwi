@@ -133,7 +133,7 @@ public class WidgetGeneratorAdapter extends RecyclerView.Adapter<RecyclerView.Vi
         if (element.getView().getWidget().getKeyboard() != null &&
                 element.getView().getWidget().getKeyboard().equals("numeric")) {
             writableItemViewHolder.editText.setInputType(InputType.TYPE_CLASS_NUMBER);
-        }else{
+        } else {
             writableItemViewHolder.editText.setInputType(InputType.TYPE_CLASS_TEXT);
         }
         writableItemViewHolder.editText.setHint(element.getView().getPrompt());
@@ -146,8 +146,8 @@ public class WidgetGeneratorAdapter extends RecyclerView.Adapter<RecyclerView.Vi
                 .map(CharSequence::toString)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(s -> {
+                    element.getView().setText(s);
                     if (!simpleRegexValidator.isValid(s)) {
-                        element.getView().setText(s);
                         writableItemViewHolder.textInputLayout.setError(simpleRegexValidator.getMessage());
                     } else {
                         writableItemViewHolder.textInputLayout.setError(null);
@@ -232,17 +232,18 @@ public class WidgetGeneratorAdapter extends RecyclerView.Adapter<RecyclerView.Vi
     @SuppressWarnings("unchecked")
     private void insertChilds(String toValidate, String parent, List<Element> elements) {
         deleteChildOf(parent);
-        for (Element element : elements) {
+        for (int i =0; i<elements.size(); i++) {
+            Element element = elements.get(i);
             if (element.getCondition() != null &&
                     element.getCondition().getField().equals(parent) &&
                     element.getCondition().getPredicate() != null) {
                 Validatable<String> v = new SimpleRegexValidator(new Validator(element.getCondition().getPredicate()));
                 if (v.isValid(toValidate)) {
-                    for (int i = 0; i < element.getContent().getElements().size(); i++) {
-                        element.getContent().getElements().get(i).setParent(parent);
-                        if (!elementsToBeShown.contains(element.getContent().getElements().get(i))) {
-                            element.getContent().getElements().get(i).getView().setText("");
-                            elementsToBeShown.add(element.getContent().getElements().get(i));
+                    for (int j = 0; j < element.getContent().getElements().size(); j++) {
+                        element.getContent().getElements().get(j).setParent(parent);
+                        if (!elementsToBeShown.contains(element.getContent().getElements().get(j))) {
+                            element.getContent().getElements().get(j).getView().setText("");
+                            elementsToBeShown.add(element.getContent().getElements().get(j));
                         }
                     }
                 }
